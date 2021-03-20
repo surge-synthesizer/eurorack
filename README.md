@@ -1,3 +1,6 @@
+This is the SURGE branch of the original eurorack module repo. Changes are mostly
+removing unused code. All changes are on the branch 'surge'
+
 Mutable Instruments' Eurorack Modules.
 
 * [Blinds](http://mutable-instruments.net/modules/blinds): Quad VC-polarizer.
