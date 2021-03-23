@@ -54,24 +54,24 @@ void VirtualAnalogEngine::Reset() {
 }
 
 const float intervals[5] = {
-  0.0f, 7.01f, 12.01f, 19.01f, 24.01f
+  0.f, 7.f, 12.f, 19.f, 24.f
 };
 
-inline float Squash(float x) {
+/*inline float Squash(float x) {
   return x * x * (3.0f - 2.0f * x);
-}
+}*/
 
 float VirtualAnalogEngine::ComputeDetuning(float detune) const {
-  detune = 2.05f * detune - 1.025f;
-  CONSTRAIN(detune, -1.0f, 1.0f);
+  detune = 2.f * detune - 1.f;
+  CONSTRAIN(detune, -1.f, 1.f);
   
-  float sign = detune < 0.0f ? -1.0f : 1.0f;
-  detune = detune * sign * 3.9999f;
+  float sign = detune < 0.f ? -1.f : 1.f;
+  detune = detune * sign * 4.f;
   MAKE_INTEGRAL_FRACTIONAL(detune);
   
   float a = intervals[detune_integral];
   float b = intervals[detune_integral + 1];
-  return (a + (b - a) * Squash(Squash(detune_fractional))) * sign;
+  return (a + (b - a) * detune_fractional) * sign;
 }
 
 void VirtualAnalogEngine::Render(
