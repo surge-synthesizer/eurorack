@@ -208,8 +208,12 @@ void ChordEngine::Render(
   ONE_POLE(morph_lp_, parameters.morph, 0.1f);
   ONE_POLE(timbre_lp_, parameters.timbre, 0.1f);
 
-  const int chord_index = chord_index_quantizer_.Process(
-      parameters.harmonics * 1.02f, kChordNumChords);
+  // SURGE is a modulatable slider not a knob, so this hysteriss isn't appropriate.
+  // See surge #4326
+  //const int chord_index = chord_index_quantizer_.Process(
+  //    parameters.harmonics * 1.02f, kChordNumChords);
+  const int chord_index = floor(std::min((float)kChordNumChords-1,
+                                   std::max(0.f, parameters.harmonics * (kChordNumChords))));
 
   float harmonics[kChordNumHarmonics * 2 + 2];
   float note_amplitudes[kChordNumVoices];
