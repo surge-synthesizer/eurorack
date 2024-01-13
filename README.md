@@ -1,6 +1,17 @@
 This is the SURGE branch of the original eurorack module repo. Changes are mostly
 removing unused code. All changes are on the branch 'surge'
 
+This is a greatly reduced copy of https://github.com/pichenettes/eurorack with
+several core modifications
+
+1. All items except plaits and clouds are removed, as are all non-dsp elements
+2. The "SuperParasites" firmware expansion for clouds from
+   https://github.com/patrickdowling/superparasites is included, again
+   with just the superparasites code
+
+
+Original Readme below:
+
 Mutable Instruments' Eurorack Modules.
 
 * [Blinds](http://mutable-instruments.net/modules/blinds): Quad VC-polarizer.
