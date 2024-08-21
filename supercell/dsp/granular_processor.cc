@@ -68,6 +68,8 @@ void GranularProcessor::Init(
   mute_in_fade_ = 0.0f;
   mute_out_fade_ = 0.0f;
   dry_wet_ = 0.0f;
+  silence_ = false;
+  bypass_ = false;
 }
 
 void GranularProcessor::ResetFilters() {
