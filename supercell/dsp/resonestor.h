@@ -193,7 +193,7 @@ class Resonestor {
       c.Read(random, burst_gain);
       // goes through comb and lp filters
       const float comb_fb = 0.6f - burst_comb_ * 0.4f;
-      float comb_del = burst_comb_ * bc.length;
+      float comb_del = burst_comb_ * (int)bc.length;
       if (comb_del <= 1.0f) comb_del = 1.0f;
       c.InterpolateHermite(bc, comb_del, comb_fb);
       c.Write(bc, 1.0f);
