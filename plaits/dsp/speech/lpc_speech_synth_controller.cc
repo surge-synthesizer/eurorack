@@ -8,10 +8,10 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,7 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// 
+//
 // See http://creativecommons.org/licenses/MIT/ for more information.
 //
 // -----------------------------------------------------------------------------
@@ -186,10 +186,10 @@ bool LPCSpeechSynthWordBank::Load(int bank) {
 
   num_frames_ = 0;
   num_words_ = 0;
-  
+
   const uint8_t* data = word_banks_[bank].data;
   size_t size = word_banks_[bank].size;
-  
+
   while (size) {
     word_boundaries_[num_words_] = num_frames_;
     size_t consumed = LoadNextWord(data);
@@ -205,7 +205,7 @@ bool LPCSpeechSynthWordBank::Load(int bank) {
 
 void LPCSpeechSynthController::Init(LPCSpeechSynthWordBank* word_bank) {
   word_bank_ = word_bank;
-  
+
   clock_phase_ = 0.0f;
   playback_frame_ = -1;
   last_playback_frame_ = -1;
@@ -215,7 +215,7 @@ void LPCSpeechSynthController::Init(LPCSpeechSynthWordBank* word_bank) {
   fill(&next_sample_[0], &next_sample_[2], 0.0f);
 
   gain_ = 0.0f;
-  
+
   synth_.Init();
 }
 
@@ -234,14 +234,14 @@ void LPCSpeechSynthController::Render(
     size_t size) {
   const float rate_ratio = SemitonesToRatio((formant_shift - 0.5f) * 36.0f);
   const float rate = rate_ratio / 6.0f;
-  
+
   // All utterances have been normalized for an average f0 of 100 Hz.
   const float pitch_shift = frequency / \
-      (rate_ratio * kLPCSpeechSynthDefaultF0 / kCorrectedSampleRate);
+      (rate_ratio * kLPCSpeechSynthDefaultF0 / kSampleRate);
   const float time_stretch = SemitonesToRatio(-speed * 24.0f +
         (formant_shift < 0.4f ? (formant_shift - 0.4f) * -45.0f
             : (formant_shift > 0.6f ? (formant_shift - 0.6f) * -45.0f : 0.0f)));
-  
+
   if (bank != -1) {
     bool reset_everything = word_bank_->Load(bank);
     if (reset_everything) {
@@ -249,7 +249,7 @@ void LPCSpeechSynthController::Render(
       last_playback_frame_ = -1;
     }
   }
-  
+
   const int num_frames = bank == -1
       ? kLPCSpeechSynthNumVowels
       : word_bank_->num_frames();
@@ -257,7 +257,7 @@ void LPCSpeechSynthController::Render(
   const LPCSpeechSynth::Frame* frames = bank == -1
       ? phonemes_
       : word_bank_->frames();
-  
+
   if (trigger) {
     if (bank == -1) {
       // Pick a pseudo-random consonant, and play it for the duration of a
@@ -274,7 +274,7 @@ void LPCSpeechSynthController::Render(
     }
     remaining_frame_samples_ = 0;
   }
-  
+
   if (playback_frame_ == -1 && remaining_frame_samples_ == 0) {
     synth_.PlayFrame(
         frames,
@@ -293,26 +293,26 @@ void LPCSpeechSynthController::Render(
     }
     remaining_frame_samples_ -= min(size, remaining_frame_samples_);
   }
-  
+
   ParameterInterpolator gain_modulation(&gain_, gain, size);
-  
+
   while (size--) {
     float this_sample[2];
     copy(&next_sample_[0], &next_sample_[2], &this_sample[0]);
     fill(&next_sample_[0], &next_sample_[2], 0.0f);
-    
+
     clock_phase_ += rate;
     if (clock_phase_ >= 1.0f) {
       clock_phase_ -= 1.0f;
       float reset_time = clock_phase_ / rate;
       float new_sample[2];
-      
+
       synth_.Render(
           prosody_amount,
           pitch_shift,
           &new_sample[0],
           &new_sample[1], 1);
-      
+
       float discontinuity[2] = {
         new_sample[0] - sample_[0],
         new_sample[1] - sample_[1]
