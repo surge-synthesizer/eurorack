@@ -48,7 +48,7 @@ static const float kSampleRate = 48000.0f;
 // const float a0 = (440.0f / 8.0f) / kCorrectedSampleRate;
 
 // In Surge, we don't need the above correction since we're running Plaits at straight 48k!
-const float a0 = (440.0f / 8.0f);
+const float a0 = (440.0f / 8.0f) / kSampleRate;
 
 const size_t kMaxBlockSize = 24;
 const size_t kBlockSize = 12;
