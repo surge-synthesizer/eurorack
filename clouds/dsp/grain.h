@@ -99,7 +99,17 @@ class Grain {
       if (use_lut_for_envelope) {
         if (quality == GRAIN_QUALITY_HIGH) {
           float window = 0.0f;
-          window = stmlib::Interpolate(lut_window, gain, 4096.0f);
+          // gain is exactly 1.0f when the envelope phase is exactly 1.0f, since
+          // 2.0f - 1.0f is 1.0f. Interpolate then indexes lut_window[4096] and
+          // lut_window[4097], and the table holds LUT_WINDOW_SIZE (4097) entries,
+          // so the second read is one float past the end of the table. It is
+          // scaled by a fractional part of exactly zero, so the interpolated
+          // result is the last table entry either way - unless the bytes that
+          // follow the table happen to read back as a NaN, which would carry
+          // into the envelope.
+          window = gain >= 1.0f
+              ? lut_window[LUT_WINDOW_SIZE - 1]
+              : stmlib::Interpolate(lut_window, gain, 4096.0f);
           gain += smoothness * (window - gain);
         }
       } else {
